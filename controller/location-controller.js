@@ -36,6 +36,10 @@ export async function createLocation(req, res) {
         if (!title || title.trim() === '' || title.length > 30) {
             return res.status(400).json({ message: 'Title must be a non-empty string and less than 30 characters!' });
         }
+        // Validate coordinates
+        if (!x_cor || !y_cor || !Number.isInteger(x_cor) || !Number.isInteger(y_cor)) {
+            return res.status(400).json({ message: 'Invalid coordinates' });
+        }
         // Check for existing location with same coordinates
         const existingLocation = await database.getLocationByCoordinates(x_cor, y_cor)
         if (existingLocation) {
@@ -46,6 +50,7 @@ export async function createLocation(req, res) {
 
         return res.status(201).json({ id: newLocationId, title, x_cor, y_cor })
     } catch (err) {
+        console.log(err)
         return res.status(500).json({ message: 'Unable to create location!' })
     }
 }
@@ -56,6 +61,14 @@ export async function updateLocation(req, res) {
         const locationId = req.params.id
         const { title, x_cor, y_cor } = req.body
 
+        // Validate title
+        if (!title || title.trim() === '' || title.length > 30) {
+            return res.status(400).json({ message: 'Title must be a non-empty string and less than 30 characters!' });
+        }
+        // Validate coordinates
+        if (!x_cor || !y_cor || !Number.isInteger(x_cor) || !Number.isInteger(y_cor)) {
+            return res.status(400).json({ message: 'Invalid coordinates' });
+        }
         // Check for existing location with same coordinates, but not the current location
         const existingLocation = await database.getLocationByCoordinates(x_cor, y_cor)
         if (existingLocation && existingLocation.id !== parseInt(locationId, 10)) {
@@ -69,6 +82,7 @@ export async function updateLocation(req, res) {
 
         return res.status(200).json({ message: 'Location updated successfully!' })
     } catch (err) {
+        console.log(err)
         return res.status(500).json({ message: 'Unable to update location!' })
     }
 }
@@ -83,7 +97,7 @@ export async function deleteLocation(req, res) {
             return res.status(404).json({ message: 'Location not found!' })
         }
 
-        return res.status(204).send()
+        return res.status(200).json({ message: 'Location deleted successfully!' })
     } catch (err) {
         return res.status(500).json({ message: 'Unable to delete location!' })
     }
