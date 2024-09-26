@@ -4,7 +4,7 @@ import database from '../database.js'
 export async function getLocations(req, res) {
     try {
         const locations = await database.getLocations()
-        
+
         return res.status(200).json(locations)
     } catch (err) {
         return res.status(500).json({ message: 'Unable to get locations!' })
@@ -83,7 +83,7 @@ export async function deleteLocation(req, res) {
             return res.status(404).json({ message: 'Location not found!' })
         }
 
-        return res.status(204).send() // No content
+        return res.status(204).send()
     } catch (err) {
         return res.status(500).json({ message: 'Unable to delete location!' })
     }
